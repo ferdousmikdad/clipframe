@@ -250,7 +250,7 @@ function heroProject(headline: string, accent: string, format: Format): Project 
 type Example = { name: string; blocks: string[] };
 const SHOWCASE: { name: string; title: string; text: string; tall?: boolean }[] = [
   { name: "taskflow-promo", title: "SaaS promo", text: "Title, UI mockup, cursor clicks, stats and an outro. 16:9." },
-  { name: "orbit-reel", title: "Social reel", text: "A 9:16 reel with captions, before/after and pricing.", tall: true },
+  { name: "brewly-by-claude", title: "Made by Claude", text: "One prompt to Claude through the MCP server. Unedited, 9:16.", tall: true },
   { name: "html-css", title: "HTML and Tailwind", text: "Keyframes, a CSS chart, 3D screenshot and a code block." },
   { name: "bangla-launch", title: "Bangla launch", text: "Complex scripts shaped correctly, in a 1:1 post." },
 ];

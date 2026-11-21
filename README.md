@@ -40,6 +40,8 @@ claude mcp add clipframe -- npx -y github:ferdousmikdad/clipframe mcp
 npx skills add ferdousmikdad/clipframe
 ```
 
+Real example: [examples/brewly-by-claude](examples/brewly-by-claude) is a 9:16 reel Claude made from one prompt through the MCP server, unedited. It checked its own frames and fixed what looked wrong.
+
 The MCP server's tools are `clipframe_guide`, `list_blocks`, `describe_block`, `validate_project`, `render_still` (returns the frame as an image the AI can see), `render_video` and `save_project`. The first run downloads and builds Clipframe, which takes about a minute. Rendering needs Google Chrome or `npx playwright install chromium`.
 
 AI-readable docs: [llms.txt](https://ferdousmikdad.github.io/clipframe/llms.txt) · [llms-full.txt](https://ferdousmikdad.github.io/clipframe/llms-full.txt) · [AGENTS.md](AGENTS.md)
