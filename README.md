@@ -186,14 +186,14 @@ Or return HTML instead of drawing: `defineHtmlBlock({ ..., html: (props, f) => \
 
 Clipframe is the rendering engine of [Clipai](https://github.com/ferdousmikdad/Clipai), a local AI video editor that adds a timeline, captions and footage editing on top of it.
 
-## Playground
+## Website and playground
+
+Live at **https://ferdousmikdad.github.io/clipframe/**: the hero video renders in your browser, so you can edit its headline, colour and format and export it as an MP4. The [playground](https://ferdousmikdad.github.io/clipframe/playground.html) lets you edit any example's JSON. Run both locally:
 
 ```bash
 npm install
 npm run demo
 ```
-
-The playground lets you pick an example, edit its JSON and watch the preview update live, then export an MP4 in the browser.
 
 ![Playground](docs/images/playground.png)
 

@@ -1,54 +1,412 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Clipframe Playground</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%237c3aed'/><path d='M12 9l12 7-12 7z' fill='white'/></svg>" />
-    <style>
-      :root { --bg:#0b0b12; --panel:#14141f; --line:#26263a; --fg:#ececf4; --muted:#9a9ab0; --accent:#7c3aed; color-scheme: dark; }
-      * { box-sizing: border-box; }
-      body { margin:0; background:var(--bg); color:var(--fg); font:14px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
-      header { display:flex; align-items:center; gap:12px; padding:14px 20px; border-bottom:1px solid var(--line); flex-wrap:wrap; }
-      header h1 { font-size:16px; margin:0; font-weight:700; }
-      header p { margin:0; color:var(--muted); flex:1; min-width:200px; }
-      header a { color:var(--fg); }
-      main { display:grid; grid-template-columns:minmax(0,1.2fr) minmax(0,1fr); gap:20px; padding:20px; max-width:1500px; margin:0 auto; }
-      @media (max-width: 900px) { main { grid-template-columns:1fr; padding:16px; } }
-      .stage { min-width:0; }
-      .toolbar { display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap; align-items:center; }
-      select, button { font:inherit; color:var(--fg); background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:7px 12px; }
-      button.primary { background:var(--accent); border-color:var(--accent); cursor:pointer; font-weight:600; }
-      button:disabled { opacity:.5; cursor:default; }
-      #status { color:var(--muted); font-size:13px; }
-      #status a { color:#c4b5fd; }
-      textarea { width:100%; height:calc(100vh - 170px); min-height:360px; resize:vertical; background:var(--panel); color:var(--fg); border:1px solid var(--line); border-radius:10px; padding:12px; font:12.5px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; }
-      #errors { color:#fca5a5; font:12px/1.5 ui-monospace, monospace; white-space:pre-wrap; margin-top:8px; }
-      .clipframe-player { max-height:calc(100vh - 170px); }
-      .clipframe-player canvas { max-height:calc(100vh - 230px); object-fit:contain; }
-    </style>
-  </head>
-  <body>
-    <header>
-      <h1>Clipframe</h1>
-      <p>Edit the JSON, watch it play, export an MP4. Everything runs in your browser.</p>
-      <a href="https://github.com/ferdousmikdad/clipframe">GitHub</a>
-    </header>
-    <main>
-      <section class="stage">
-        <div class="toolbar">
-          <select id="example" aria-label="Example"></select>
-          <select id="res" aria-label="Export size"><option>1080p</option><option>720p</option></select>
-          <button id="export" class="primary">Export MP4</button>
-          <span id="status"></span>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Clipframe — make videos with code, free for every team</title>
+  <meta name="description" content="Clipframe turns JSON, HTML, Tailwind or a few lines of JavaScript into MP4 videos. Live preview, export in the browser, render from the command line. MIT licensed: no seat fees, no render fees." />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Clipframe" />
+  <meta property="og:title" content="Clipframe — make videos with code, free for every team" />
+  <meta property="og:description" content="JSON, HTML and Tailwind in, MP4 out. A free, MIT-licensed Remotion alternative." />
+  <meta name="theme-color" content="#070707" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='31' fill='%23fafafa'/%3E%3Cpath d='M26 21.5 45 32 26 42.5z' fill='%23050505'/%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@300..600&family=Geist+Mono:wght@400;500&display=swap" />
+  <script>
+    (function () {
+      var t = null;
+      try { t = localStorage.getItem("theme"); } catch (e) {}
+      if (t !== "light" && t !== "dark") t = window.matchMedia && matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+      document.documentElement.setAttribute("data-theme", t);
+    })();
+  </script>
+  <link rel="stylesheet" href="./site.css" />
+</head>
+<body>
+
+<header class="nav">
+  <div class="container nav-inner">
+    <a class="brand" href="./" aria-label="Clipframe home">
+      <svg viewBox="0 0 64 64" aria-hidden="true"><circle class="disc" cx="32" cy="32" r="31"/><path class="mark" d="M26 21.5 45 32 26 42.5z"/></svg>
+      Clipframe
+    </a>
+    <nav class="nav-links" aria-label="Main">
+      <a href="#make">Features</a>
+      <a href="#showcase">Showcase</a>
+      <a href="#compare">Compare</a>
+      <a href="#pricing">Pricing</a>
+      <a href="https://github.com/ferdousmikdad/clipframe#readme">Docs</a>
+      <a href="./playground.html">Playground</a>
+    </nav>
+    <div class="nav-right">
+      <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch theme">
+        <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      </button>
+      <a class="btn gh-btn" href="https://github.com/ferdousmikdad/clipframe" aria-label="Clipframe on GitHub">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.7.5.5 5.7.5 12c0 5.1 3.3 9.4 7.9 10.9.6.1.8-.3.8-.6v-2c-3.2.7-3.9-1.5-3.9-1.5-.5-1.3-1.3-1.7-1.3-1.7-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.6-.3-5.3-1.3-5.3-5.7 0-1.3.5-2.3 1.2-3.1-.1-.3-.5-1.5.1-3.1 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.3 4.7 18.3 5 18.3 5c.6 1.6.2 2.8.1 3.1.8.8 1.2 1.8 1.2 3.1 0 4.4-2.7 5.4-5.3 5.7.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A11.5 11.5 0 0 0 23.5 12C23.5 5.7 18.3.5 12 .5z"/></svg>
+        <span class="count" data-stars></span>
+      </a>
+      <a class="btn primary small" href="./playground.html">Open playground</a>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- ============ Hero ============ -->
+  <div class="hero">
+    <div class="container">
+      <a class="eyebrow" href="#compare"><b>New</b> HTML, CSS and Tailwind scenes <span class="soft">→</span></a>
+      <h1>Make videos with code.<span class="soft">Free for every team, forever.</span></h1>
+      <p class="lead">Clipframe turns JSON, HTML, Tailwind or a few lines of JavaScript into MP4 videos. Preview live, export right in the browser or render from the command line. MIT licensed: no seat fees, no render fees, no company size limits.</p>
+      <div class="cta-row">
+        <a class="btn primary lg" href="./playground.html">Open the playground <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></a>
+        <a class="btn lg" href="https://github.com/ferdousmikdad/clipframe">Star on GitHub</a>
+      </div>
+      <div class="install">
+        <code><span class="prompt">$ </span><span id="install-cmd">git clone https://github.com/ferdousmikdad/clipframe &amp;&amp; cd clipframe &amp;&amp; npm i &amp;&amp; npm run build</span></code>
+        <button class="btn copy" type="button" data-copy="#install-cmd">Copy</button>
+      </div>
+      <p class="term-note">Then <code>node bin/clipframe.js render examples/taskflow-promo/project.json</code>. The npm package is on its way.</p>
+
+      <div class="art hero-art">
+        <div class="window">
+          <div class="window-bar"><i></i><i></i><i></i><span class="url">clipframe · rendering in your browser</span><span class="live">Live</span></div>
+          <div class="studio">
+            <div class="studio-stage">
+              <div class="stage-box" id="hero-stage"></div>
+              <div class="transport">
+                <button class="play" id="hero-play" type="button" aria-label="Pause">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path id="hero-play-icon" d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg>
+                </button>
+                <input class="scrub" id="hero-scrub" type="range" min="0" step="any" value="0" aria-label="Seek" />
+                <span id="hero-time">0:00</span>
+              </div>
+            </div>
+            <aside class="studio-side" aria-label="Edit this video">
+              <div class="side-title">Edit this video<span>It re-renders as you type. No server.</span></div>
+              <label class="field">Headline
+                <input type="text" id="hero-headline" value="Make videos with code." maxlength="60" />
+              </label>
+              <div class="field">Accent
+                <div class="swatches" id="hero-swatches"></div>
+              </div>
+              <div class="field">Format
+                <div class="seg" id="hero-format">
+                  <button type="button" data-format="16:9" aria-pressed="true">16:9</button>
+                  <button type="button" data-format="9:16" aria-pressed="false">9:16</button>
+                  <button type="button" data-format="1:1" aria-pressed="false">1:1</button>
+                </div>
+              </div>
+              <div class="side-export">
+                <button class="btn primary" id="hero-export" type="button">Export MP4 <span class="soft" style="color:inherit;opacity:.6">· 720p</span></button>
+                <div class="meter"><i id="hero-meter"></i></div>
+                <div class="status" id="hero-status">Renders on this device with WebCodecs.</div>
+              </div>
+            </aside>
+          </div>
         </div>
-        <div id="player"></div>
-      </section>
-      <section>
-        <textarea id="json" spellcheck="false" aria-label="Project JSON"></textarea>
-        <div id="errors"></div>
-      </section>
-    </main>
-    <script type="module" src="./main.ts"></script>
-  </body>
+      </div>
+
+      <div class="stats">
+        <div><b>$0</b><span>per seat, per render, per company</span></div>
+        <div><b>MIT</b><span>real open source license</span></div>
+        <div><b>20</b><span>ready-made animation blocks</span></div>
+        <div><b>3 ways</b><span>to render: player, browser, CLI</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 01 Ways to make ============ -->
+  <section id="make">
+    <div class="container">
+      <div class="chapter">
+        <div class="chapter-l"><span class="num">01</span><h2>Make</h2></div>
+        <div class="chapter-r">
+          <h3>Four ways to make a video.<span class="soft">One renderer underneath.</span></h3>
+          <p>Ask an agent, write JSON, design in HTML and Tailwind, or drop down to code. Every path ends in the same frame-exact MP4.</p>
+        </div>
+      </div>
+      <div class="tabs" role="tablist" aria-label="Ways to make a video">
+        <button class="tab" role="tab" aria-selected="true" aria-controls="p-ai" id="t-ai">With an agent</button>
+        <button class="tab" role="tab" aria-selected="false" aria-controls="p-json" id="t-json">With JSON</button>
+        <button class="tab" role="tab" aria-selected="false" aria-controls="p-html" id="t-html">With HTML &amp; Tailwind</button>
+        <button class="tab" role="tab" aria-selected="false" aria-controls="p-code" id="t-code">With code</button>
+      </div>
+
+      <div class="panel" id="p-ai" role="tabpanel" aria-labelledby="t-ai">
+        <div>
+          <h3>Agents write a few lines, not a codebase.</h3>
+          <p>An agent describes the video as short JSON and Clipframe does the animation. Changes are small, checked edits, so a whole promo costs a few hundred tokens instead of thousands of lines of React.</p>
+          <ul>
+            <li>A one-line menu of every block for the model</li>
+            <li>Atomic edit ops with undo-friendly results</li>
+            <li>Errors a model can fix: <code>s3.props.title: required</code></li>
+          </ul>
+        </div>
+        <div class="visual art compact v2">
+          <div class="code"><div class="code-bar">ops.json · from your agent</div>
+<pre><span class="c">// "Add a stats scene and make it orange"</span>
+[
+  { <span class="k">"op"</span>: <span class="s">"add_scene"</span>, <span class="k">"scene"</span>: {
+      <span class="k">"block"</span>: <span class="s">"stats-counter"</span>,
+      <span class="k">"props"</span>: { <span class="k">"items"</span>: [{ <span class="k">"value"</span>: 128, <span class="k">"label"</span>: <span class="s">"Teams"</span> }] } } },
+  { <span class="k">"op"</span>: <span class="s">"set_theme"</span>, <span class="k">"patch"</span>: { <span class="k">"primary"</span>: <span class="s">"#F97316"</span> } }
+]</pre></div>
+        </div>
+      </div>
+
+      <div class="panel" id="p-json" role="tabpanel" aria-labelledby="t-json" hidden>
+        <div>
+          <h3>A video is a list of scenes.</h3>
+          <p>Pick a block, set its props, choose a transition. Themes, music, voice-over and sound effects live in the same file. Generate it from your data and render thousands of variations.</p>
+          <ul>
+            <li>20 blocks: UI mockups, cursor clicks, pricing, stats, outros</li>
+            <li>16:9, 9:16, 1:1, 4:5, 4:3 at 720p or 1080p, 30 or 60 fps</li>
+            <li><code>clipframe render project.json</code> for an MP4</li>
+          </ul>
+        </div>
+        <div class="visual art compact v3">
+          <div class="code"><div class="code-bar">project.json</div>
+<pre>{
+  <span class="k">"meta"</span>: { <span class="k">"format"</span>: <span class="s">"9:16"</span>, <span class="k">"fps"</span>: 30, <span class="k">"resolution"</span>: <span class="s">"1080p"</span> },
+  <span class="k">"scenes"</span>: [
+    { <span class="k">"block"</span>: <span class="s">"title-reveal"</span>, <span class="k">"duration"</span>: 3,
+      <span class="k">"props"</span>: { <span class="k">"title"</span>: <span class="s">"Meet TaskFlow"</span> } },
+    { <span class="k">"block"</span>: <span class="s">"ui-mockup"</span>, <span class="k">"duration"</span>: 4,
+      <span class="k">"props"</span>: { <span class="k">"asset"</span>: <span class="s">"shot"</span>, <span class="k">"frame"</span>: <span class="s">"phone"</span> },
+      <span class="k">"transition"</span>: { <span class="k">"type"</span>: <span class="s">"slide"</span>, <span class="k">"duration"</span>: 0.5 } }
+  ],
+  <span class="k">"audio"</span>: { <span class="k">"music"</span>: <span class="s">"song"</span>, <span class="k">"duck"</span>: 0.3 }
+}</pre></div>
+        </div>
+      </div>
+
+      <div class="panel" id="p-html" role="tabpanel" aria-labelledby="t-html" hidden>
+        <div>
+          <h3>Real HTML and CSS, on the video clock.</h3>
+          <p>Flexbox, grid, gradients, blur, 3D transforms, web fonts and Tailwind v4, compiled in the browser. <code>@keyframes</code> play frame-exact, and <code>var(--t)</code> gives you the time.</p>
+          <ul>
+            <li>Tailwind compiled with no build step</li>
+            <li>Any Google Font, project images with <code>asset:ID</code></li>
+            <li>Frames wait for their fonts. No flashes, ever</li>
+          </ul>
+        </div>
+        <div class="visual art compact v4">
+          <div class="code"><div class="code-bar">an html scene</div>
+<pre>{ <span class="k">"block"</span>: <span class="s">"html"</span>, <span class="k">"duration"</span>: 4, <span class="k">"props"</span>: {
+  <span class="k">"tailwind"</span>: true,
+  <span class="k">"html"</span>: <span class="s">"&lt;h1 class='rise text-[140px] font-bold'&gt;
+            Hello &lt;span class='text-violet-400'&gt;HTML&lt;/span&gt;
+          &lt;/h1&gt;
+          &lt;div class='h-2 bg-white' style='width:calc(var(--p)*100%)'/&gt;"</span>,
+  <span class="k">"css"</span>: <span class="s">".rise{animation:rise .8s both}
+          @keyframes rise{from{opacity:0;translate:0 60px}}"</span>
+} }</pre></div>
+        </div>
+      </div>
+
+      <div class="panel" id="p-code" role="tabpanel" aria-labelledby="t-code" hidden>
+        <div>
+          <h3>Code when you need it. React too.</h3>
+          <p>A block is one small file: a schema and a function that returns HTML (or draws on a canvas) for each frame. Use <code>interpolate</code> and <code>spring</code>, or render a React component to markup.</p>
+          <ul>
+            <li>Plain JavaScript, TypeScript or React</li>
+            <li>Remotion-style <code>interpolate</code>, <code>spring</code>, easing</li>
+            <li>Same block in the player, the browser and the CLI</li>
+          </ul>
+        </div>
+        <div class="visual art compact">
+          <div class="code"><div class="code-bar">price.js</div>
+<pre><span class="k">export default</span> ({ z, defineHtmlBlock, interpolate }) =>
+  defineHtmlBlock({
+    id: <span class="s">"price"</span>, category: <span class="s">"data"</span>, defaultDuration: 3,
+    schema: z.object({ price: z.number().default(29) }),
+    tailwind: true,
+    html: (p, f) => {
+      <span class="k">const</span> n = Math.round(p.price * interpolate(f.t, [0, 1.5], [0, 1]));
+      <span class="k">return</span> <span class="s">`&lt;b class="text-[200px]"&gt;$${n}&lt;/b&gt;`</span>;
+    },
+  });</pre></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 02 Showcase ============ -->
+  <section id="showcase" class="rule">
+    <div class="container">
+      <div class="chapter">
+        <div class="chapter-l"><span class="num">02</span><h2>Showcase</h2></div>
+        <div class="chapter-r">
+          <h3>These are not recordings.<span class="soft">They render live, right here.</span></h3>
+          <p>Every video below is a small JSON file, drawn frame by frame by Clipframe in your browser. Open one in the playground to change it.</p>
+        </div>
+      </div>
+      <div class="show-grid" id="show-grid"></div>
+    </div>
+  </section>
+
+  <!-- ============ 03 Everything included ============ -->
+  <section id="features" class="rule">
+    <div class="container">
+      <div class="chapter">
+        <div class="chapter-l"><span class="num">03</span><h2>Included</h2></div>
+        <div class="chapter-r">
+          <h3>Everything a video needs.<span class="soft">Nothing behind a paywall.</span></h3>
+          <p>Every feature ships in the same MIT-licensed package. There is no paid tier to unlock.</p>
+        </div>
+      </div>
+      <div class="bento">
+        <div class="tile"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M10 8.5l5.5 3.5-5.5 3.5z"/></svg></div><h3>Player</h3><p>Embed a live, editable video in any page, in plain JavaScript or React.</p></div>
+        <div class="tile"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M12 8v6M9 11l3 3 3-3M8 21h8"/></svg></div><h3>Export in the browser</h3><p>H.264 and AAC with WebCodecs. Nothing is uploaded, nothing runs on a server.</p></div>
+        <div class="tile"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17l6-5-6-5M12 19h8"/></svg></div><h3>Render anywhere</h3><p>A command line on headless Chrome. Laptops, CI and your own servers.</p></div>
+        <div class="tile"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg></div><h3>HTML, CSS, Tailwind<span class="tag">New</span></h3><p>Real web layout with keyframes on the video clock and fonts that never flash.</p></div>
+        <div class="tile"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="14" height="12" rx="2"/><path d="M16 10l6-4v12l-6-4"/></svg></div><h3>Video</h3><p>Trim, speed, zoom, framing and colour. Decoded frame-exact on export.</p></div>
+        <div class="tile"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div><h3>Audio</h3><p>Music, voice-over and sound effects, with music that ducks under speech.</p></div>
+        <div class="tile"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></div><h3>20 blocks</h3><p>UI mockups, cursor clicks, feature grids, pricing, stats, testimonials, outros.</p></div>
+        <div class="tile"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l10 6-10 6L2 8z"/><path d="M2 16l10 6 10-6"/></svg></div><h3>Transitions</h3><p>Fade, slide, zoom and wipe between any two scenes.</p></div>
+        <div class="tile"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="12" height="10" rx="1.5"/><rect x="16" y="4" width="6" height="16" rx="1.5"/></svg></div><h3>Every format</h3><p>16:9, 9:16, 1:1, 4:5 and 4:3. One project, re-laid out for each.</p></div>
+        <div class="tile"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20l6-16 6 16M6.5 14h7M17 20h4"/></svg></div><h3>Every script</h3><p>Latin and Bangla fonts bundled, shaped correctly. Any Google Font on top.</p></div>
+        <div class="tile"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 8v8M8 12h8"/></svg></div><h3>Your own blocks</h3><p>One small file: a schema plus HTML or canvas drawing. No build step.</p></div>
+        <div class="tile"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2 6 6 2-6 2-2 6-2-6-6-2 6-2z"/></svg></div><h3>Built for agents</h3><p>A block menu, edit ops and fixable errors. Videos cost tokens, not hours.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 04 Compare ============ -->
+  <section id="compare" class="rule">
+    <div class="container">
+      <div class="chapter">
+        <div class="chapter-l"><span class="num">04</span><h2>Why Clipframe</h2></div>
+        <div class="chapter-r">
+          <h3>Ahead where it counts.<span class="soft">Your budget, your license, your tokens.</span></h3>
+          <p>Remotion pioneered video as code. Clipframe takes the same idea and removes the bill: open source, no seats, no per-render fees, and a format agents can write cheaply.</p>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table class="compare">
+          <thead><tr><th></th><th class="us">Clipframe</th><th>Remotion</th></tr></thead>
+          <tbody>
+            <tr><td>License</td><td class="us">MIT, open source</td><td>Source-available Remotion License</td></tr>
+            <tr><td>Companies of any size</td><td class="us">Free, forever</td><td>Free up to 3 people, then a paid company license</td></tr>
+            <tr><td>Per-render fees</td><td class="us">None</td><td>$0.01 per render, $100/month minimum (Automators)</td></tr>
+            <tr><td>Per-seat fees</td><td class="us">None</td><td>$25/month per seat (Creators)</td></tr>
+            <tr><td>What you or your agent writes</td><td class="us">Short JSON, HTML, or code</td><td>React components</td></tr>
+            <tr><td>Ready-made promo blocks</td><td class="us">20 included</td><td>Elements and templates</td></tr>
+            <tr><td>HTML, CSS and Tailwind</td><td class="us">Yes</td><td>Yes</td></tr>
+            <tr><td>Player, browser export, CLI render</td><td class="us">Yes</td><td>Yes</td></tr>
+            <tr><td>Video, audio, transitions</td><td class="us">Yes</td><td>Yes</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="compare-note">Remotion prices as listed on <a href="https://www.remotion.dev/">remotion.dev</a> in November 2026. Remotion is still the pick for serverless rendering on AWS Lambda and its large plugin ecosystem; Clipframe renders on your own machines and servers.</p>
+    </div>
+  </section>
+
+  <!-- ============ 05 Pricing ============ -->
+  <section id="pricing" class="rule">
+    <div class="container">
+      <div class="chapter">
+        <div class="chapter-l"><span class="num">05</span><h2>Pricing</h2></div>
+        <div class="chapter-r">
+          <h3>Free. Not free-for-now.<span class="soft">The license says so.</span></h3>
+          <p>MIT means you can use, change, ship and sell with Clipframe at any scale. Nobody can take that back.</p>
+        </div>
+      </div>
+      <div class="pricing">
+        <div class="price us">
+          <div class="name">Clipframe</div>
+          <div class="amount">$0 <small>forever</small></div>
+          <ul>
+            <li>Every feature</li>
+            <li>Unlimited renders</li>
+            <li>Unlimited seats</li>
+            <li>Commercial use at any company size</li>
+            <li>MIT license</li>
+          </ul>
+          <div class="cta-row"><a class="btn primary" href="./playground.html">Start in the playground</a><a class="btn" href="https://github.com/ferdousmikdad/clipframe">GitHub</a></div>
+        </div>
+        <div class="price">
+          <div class="name">Remotion company license</div>
+          <div class="amount">$25+ <small>per seat, per month</small></div>
+          <ul>
+            <li>Free only for individuals and teams of up to 3</li>
+            <li>$25/month per creator seat</li>
+            <li>$0.01 per render for automation, $100/month minimum</li>
+            <li>Enterprise from $500/month</li>
+            <li>Source-available license, not open source</li>
+          </ul>
+          <div class="foot">As listed on remotion.dev, November 2026.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 06 Open source ============ -->
+  <section class="rule">
+    <div class="container oss">
+      <div>
+        <div class="chapter-l" style="margin-bottom:28px"><span class="num">06</span><h2>Open source</h2></div>
+        <h3 style="font-size:clamp(26px,2.6vw,32px);line-height:1.3;letter-spacing:-0.01em">Read it, fork it, ship it.<span class="soft" style="display:block">Pull requests welcome.</span></h3>
+        <p style="margin-top:24px;font-size:17px;max-width:520px">The renderer, every block, the player, the exporter and the CLI are all in one MIT-licensed repository. New blocks are one file, and so is your first contribution.</p>
+        <div class="cta-row"><a class="btn primary" href="https://github.com/ferdousmikdad/clipframe">Star on GitHub</a><a class="btn" href="https://github.com/ferdousmikdad/clipframe/blob/main/CONTRIBUTING.md">Contribute</a></div>
+      </div>
+      <div class="art compact v2">
+        <div class="code"><div class="code-bar">your app</div>
+<pre><span class="k">import</span> { createPlayer } <span class="k">from</span> <span class="s">"clipframe/player"</span>;
+<span class="k">import</span> { renderToMp4 } <span class="k">from</span> <span class="s">"clipframe/export"</span>;
+
+createPlayer(el, { project });           <span class="c">// live preview</span>
+<span class="k">const</span> mp4 = <span class="k">await</span> renderToMp4(project);   <span class="c">// an MP4 Blob</span></pre></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 07 FAQ ============ -->
+  <section id="faq" class="rule">
+    <div class="container">
+      <div class="chapter">
+        <div class="chapter-l"><span class="num">07</span><h2>Questions</h2></div>
+        <div class="chapter-r"><h3>Short answers.<span class="soft">Honest ones.</span></h3></div>
+      </div>
+      <div class="faq">
+        <details><summary>Is it really free for my company?</summary><p>Yes. Clipframe is MIT licensed: use it commercially at any company size, with no seats, no render fees and no sign-up. Fonts are SIL OFL and the icons are ISC, both free for commercial use.</p></details>
+        <details><summary>Can I bring my Remotion project over?</summary><p>Not unchanged. Clipframe is not a drop-in replacement: scenes are JSON blocks, HTML or small code blocks rather than React trees. The animation helpers (<code>interpolate</code>, <code>spring</code>, easing) work the same way, so porting a component is usually quick, and React components can be rendered to HTML per frame.</p></details>
+        <details><summary>Which browsers can export?</summary><p>Chrome and Edge, which have WebCodecs video encoding. Every modern browser can preview. The CLI uses headless Chrome, so server rendering works anywhere Chrome runs.</p></details>
+        <details><summary>Can I render on a server?</summary><p>Yes: <code>clipframe render project.json</code> runs headless Chrome and writes an MP4. Run it in CI, a container or a queue worker. There is no hosted serverless service yet.</p></details>
+        <details><summary>What can't the HTML scenes do?</summary><p>Scripts inside the HTML don't run (logic goes in a code block), and <code>&lt;video&gt;</code> or <code>&lt;iframe&gt;</code> can't be embedded inside HTML. Put a video scene underneath an HTML overlay instead.</p></details>
+        <details><summary>Do I need to install anything to try it?</summary><p>No. The <a href="./playground.html">playground</a> and the video at the top of this page render and export entirely in your browser.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ Final CTA ============ -->
+  <section class="rule final">
+    <div class="container">
+      <h2>Ready to make your first video?<span class="soft">It takes a minute, and it's free.</span></h2>
+      <div class="cta-row"><a class="btn primary lg" href="./playground.html">Open the playground <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></a><a class="btn lg" href="https://github.com/ferdousmikdad/clipframe#readme">Read the docs</a></div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <a class="brand" href="./"><svg viewBox="0 0 64 64" aria-hidden="true"><circle class="disc" cx="32" cy="32" r="31"/><path class="mark" d="M26 21.5 45 32 26 42.5z"/></svg>Clipframe</a>
+        <p class="tagline">Make videos with code. Free for every team, forever.</p>
+      </div>
+      <div><h4>Product</h4><ul><li><a href="./playground.html">Playground</a></li><li><a href="#showcase">Showcase</a></li><li><a href="#features">Features</a></li><li><a href="#pricing">Pricing</a></li></ul></div>
+      <div><h4>Docs</h4><ul><li><a href="https://github.com/ferdousmikdad/clipframe#readme">Getting started</a></li><li><a href="https://github.com/ferdousmikdad/clipframe/blob/main/docs/html.md">HTML in video</a></li><li><a href="https://github.com/ferdousmikdad/clipframe/blob/main/docs/blocks.md">Blocks</a></li><li><a href="https://github.com/ferdousmikdad/clipframe/blob/main/docs/custom-blocks.md">Custom blocks</a></li></ul></div>
+      <div><h4>Project</h4><ul><li><a href="https://github.com/ferdousmikdad/clipframe">GitHub</a></li><li><a href="https://github.com/ferdousmikdad/clipframe/issues">Issues</a></li><li><a href="https://github.com/ferdousmikdad/clipframe/blob/main/CONTRIBUTING.md">Contributing</a></li><li><a href="https://github.com/ferdousmikdad/clipframe/blob/main/LICENSE">MIT License</a></li></ul></div>
+    </div>
+    <div class="footer-bottom"><span>© 2026 Ferdous Mikdad · MIT</span><span>Built with Clipframe's own renderer.</span></div>
+  </div>
+</footer>
+
+<script type="module" src="./site.ts"></script>
+</body>
 </html>

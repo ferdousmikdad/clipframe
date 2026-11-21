@@ -84,6 +84,22 @@ exportBtn.addEventListener("click", async () => {
 const examples = (await (await fetch("examples/index.json")).json()) as Example[];
 for (const e of examples) select.append(new Option(e.name, e.name));
 const byName = (n: string) => examples.find((e) => e.name === n) ?? examples[0];
-select.addEventListener("change", () => void open(byName(select.value)));
-select.value = byName("taskflow-promo").name;
+select.addEventListener("change", () => {
+  history.replaceState(null, "", `?example=${select.value}`);
+  void open(byName(select.value));
+});
+select.value = byName(new URLSearchParams(location.search).get("example") ?? "taskflow-promo").name;
 await open(byName(select.value));
+
+// theme toggle (shared look with the website)
+document.querySelectorAll("[data-theme-toggle]").forEach((b) =>
+  b.addEventListener("click", () => {
+    const next = document.documentElement.getAttribute("data-theme") === "light" ? "dark" : "light";
+    try {
+      localStorage.setItem("theme", next);
+    } catch {
+      /* private mode */
+    }
+    document.documentElement.setAttribute("data-theme", next);
+  }),
+);
