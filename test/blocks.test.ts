@@ -1,10 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { builtinBlocks, compactBlockList, createBuiltinRegistry, describeBlock, resolvePluginExport } from "../src/index.js";
+import { builtinBlocks, compactBlockList, createBuiltinRegistry, defineHtmlBlock, describeBlock, pluginApi, resolvePluginExport } from "../src/index.js";
+import { z } from "zod";
 
 const BLOCKS = [
   "video", "title-reveal", "kinetic-text", "ui-mockup", "cursor-click", "zoom-pan", "feature-callout", "feature-grid",
   "stats-counter", "before-after", "testimonial", "pricing-card", "logo-outro", "background", "picture",
-  "lower-third", "captions", "watermark",
+  "lower-third", "captions", "watermark", "html", "html-overlay",
 ];
 
 describe("built-in blocks", () => {
@@ -42,5 +43,35 @@ describe("built-in blocks", () => {
     const [b] = resolvePluginExport(mod.default, "countdown.js");
     expect(b.id).toBe("countdown");
     expect(b.defaults).toEqual({ from: 3, message: "Launch!" });
+  });
+});
+
+describe("html blocks", () => {
+  it("html and html-overlay have a prepare step (exports wait for each frame)", () => {
+    const r = createBuiltinRegistry();
+    expect(typeof r.get("html")?.prepare).toBe("function");
+    expect(r.get("html-overlay")?.category).toBe("overlay");
+  });
+
+  it("defineHtmlBlock makes a block with defaults and a prepare step", () => {
+    const b = defineHtmlBlock({
+      id: "tag",
+      name: "Tag",
+      summary: "A tag",
+      category: "text",
+      defaultDuration: 2,
+      schema: z.object({ text: z.string().default("hi") }),
+      html: (p, f) => `<b>${p.text} ${f.t}</b>`,
+    });
+    expect(b.defaults).toEqual({ text: "hi" });
+    expect(typeof b.prepare).toBe("function");
+    expect(pluginApi.defineHtmlBlock).toBe(defineHtmlBlock);
+  });
+
+  it("loads the html-css example's code block", async () => {
+    const mod = await import("../examples/html-css/price.js");
+    const [b] = resolvePluginExport(mod.default, "price.js");
+    expect(b.id).toBe("price-reveal");
+    expect(b.defaults).toEqual({ price: 29, plan: "Pro", per: "/ month" });
   });
 });

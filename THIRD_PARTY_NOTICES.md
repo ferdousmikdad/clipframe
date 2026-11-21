@@ -15,6 +15,7 @@ Clipframe is MIT licensed. It bundles and depends on the open-source work below,
 |---|---|---|
 | [zod](https://github.com/colinhacks/zod) | MIT | Project and block schemas |
 | [lucide](https://github.com/lucide-icons/lucide) | ISC | Icons in blocks |
+| [tailwindcss](https://github.com/tailwindlabs/tailwindcss) | MIT | Compiling Tailwind classes in HTML blocks (its stylesheets are embedded in `src/html/tailwind-css.ts`) |
 | [mp4-muxer](https://github.com/Vanilagy/mp4-muxer) | MIT | Writing the MP4 file |
 | [mediabunny](https://github.com/Vanilagy/mediabunny) | MPL-2.0 | Decoding video and audio for export (used unmodified; MPL-2.0 is file-level copyleft and allows use in MIT and proprietary projects) |
 | [playwright-core](https://github.com/microsoft/playwright) | Apache-2.0 | Driving headless Chrome for the CLI |

@@ -42,6 +42,8 @@ export const EMPTY_ASSETS: LoadedAssets = { get: () => undefined };
 
 export type RenderArgs<P> = {
   ctx: Ctx2D;
+  /** The scene / overlay id (stable across frames; handy as a cache key). */
+  id: string;
   props: P;
   theme: Theme;
   /** Seconds since the scene started (keeps running past `duration` during an outgoing transition). */
@@ -74,6 +76,11 @@ export type BlockDefinition<P = any> = {
   schema: z.ZodType<P>;
   defaults: P;
   render(r: RenderArgs<P>): void;
+  /**
+   * Optional async work before a frame is drawn (e.g. rasterising HTML). The exporter awaits it for every
+   * frame so the export is exact; the player calls it and redraws when it settles. `ctx` is not drawn on here.
+   */
+  prepare?(r: RenderArgs<P>): Promise<void> | void;
   /** Set by the plugin loader. */
   plugin?: string;
 };

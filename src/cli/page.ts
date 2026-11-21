@@ -42,7 +42,8 @@ function sink(): ExportSink {
 }
 
 async function main() {
-  const job = (await (await fetch("/__job")).json()) as Job;
+  const job = (await (await fetch("/__job")).json()) as Job & { debug?: boolean };
+  if (job.debug) (globalThis as { __clipframeDebugSvg?: (svg: string, id: string) => void }).__clipframeDebugSvg = (svg, id) => void post(`/__debug?id=${encodeURIComponent(id)}`, svg);
   const registry = createBuiltinRegistry();
   for (const url of job.plugins) {
     const mod = (await import(/* @vite-ignore */ url)) as { default: unknown };

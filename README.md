@@ -1,6 +1,6 @@
 # Clipframe
 
-**Make videos from JSON.** Clipframe is a free, MIT-licensed alternative to Remotion for data-driven and AI-made videos: product promos, launch films, social reels, explainers. It includes a canvas renderer, 18 prebuilt animation blocks, a player, MP4 export in the browser and a command-line renderer.
+**Make videos from JSON.** Clipframe is a free, MIT-licensed alternative to Remotion for data-driven and AI-made videos: product promos, launch films, social reels, explainers. It includes a canvas renderer, real **HTML, CSS and Tailwind** scenes, 20 prebuilt animation blocks, video and audio, a player, MP4 export in the browser and a command-line renderer.
 
 ```bash
 npx clipframe init my-video
@@ -13,27 +13,31 @@ npx clipframe render my-video/project.json      # → my-video/taskflow-promo.mp
 - **JSON in, MP4 out.** A video is a list of scenes, each a block plus its props. People can write it by hand, apps can generate it, and an AI can write it in a few hundred tokens instead of thousands of lines of animation code.
 - **Preview matches export.** The player and the exporter call the same `renderFrame`, so the file shows exactly what you saw.
 - **Renders anywhere Chrome runs.** It exports in the browser with WebCodecs (no server), or from the command line with headless Chrome.
-- **Extensible.** A custom block is one small JavaScript file with a schema and a draw function.
+- **HTML, CSS and Tailwind in the video.** Use flexbox, grid, gradients, 3D transforms, web fonts and `@keyframes` animations, captured frame by frame on the video's clock. You can also write blocks whose HTML comes from code (React works too). See [HTML in video](docs/html.md).
+- **Video, music, voice-over and sound effects,** with the music ducking under speech and clip sound.
+- **Extensible.** A custom block is one small JavaScript file: a schema plus either a canvas draw function or an HTML function.
 
 ## Is it a Remotion replacement?
 
-It covers the same job (code-defined video, a preview player, rendering to MP4), but it is **not a drop-in replacement**. Remotion projects will not run on it. Pick the tool that fits:
+It does the same job (code-defined video, a preview player, rendering to MP4) and covers Remotion's everyday features, but it is **not a drop-in replacement**. Remotion projects need porting. Here is where each one stands:
 
 | | Remotion | Clipframe |
 |---|---|---|
-| You write | React components (HTML / CSS) | JSON scenes using blocks; custom blocks draw on a canvas |
+| You write | React components (HTML / CSS) | JSON scenes using blocks, HTML/CSS/Tailwind, or code that returns HTML or draws on a canvas |
 | License | Free for individuals and small teams; companies need a paid license | MIT, free for everyone |
-| Any HTML, CSS, Tailwind or DOM content in the video | ✅ | ❌ (Canvas 2D only) |
+| HTML, CSS and Tailwind in the video | ✅ | ✅ ([no scripts inside the HTML](docs/html.md#limits); logic goes in code blocks) |
+| CSS `@keyframes` on the video clock | ✅ | ✅ |
+| React components | ✅ (native, with hooks) | ✅ via `renderToStaticMarkup` (animate from `t`, no hooks state) |
 | Animation helpers (`interpolate`, `spring`, easing) | ✅ | ✅ (similar API, in seconds) |
 | Player component | ✅ | ✅ (plain JS or React) |
 | Render in the user's browser | Limited | ✅ (WebCodecs) |
 | Render from the command line | ✅ | ✅ (headless Chrome) |
 | Cloud / Lambda rendering | ✅ | ❌ (run the CLI on your own server) |
 | Video clips, music, voice-over, sound effects, music ducking | ✅ | ✅ |
-| Prebuilt promo blocks (UI mockups, cursor clicks, pricing, stats…) | Templates (some paid) | ✅ 18 built-in |
+| Prebuilt promo blocks (UI mockups, cursor clicks, pricing, stats…) | Templates (some paid) | ✅ 20 built-in |
 | Cost of having an AI make a video | High (it writes code) | Low (it writes JSON) |
 
-Choose Remotion if you need arbitrary web content in your frames or its cloud rendering. Choose Clipframe if you want structured videos made by people, apps or AI with no license questions.
+Choose Remotion if you need cloud rendering, live interactive components (`<video>`, `<iframe>`, client-side scripts) inside frames, or its plugin ecosystem. Choose Clipframe if you want HTML/CSS or structured videos made by people, apps or AI, with no license questions.
 
 ## A project
 
@@ -65,6 +69,7 @@ The full format is in [docs/project-format.md](docs/project-format.md), and ever
 
 | Group | Blocks |
 |---|---|
+| HTML | `html` (scene), `html-overlay` (over the scenes): any HTML + CSS + Tailwind. See [docs/html.md](docs/html.md) |
 | Media | `video`, `picture` |
 | Text | `title-reveal`, `kinetic-text` |
 | UI | `ui-mockup` (browser / phone / laptop), `cursor-click`, `zoom-pan`, `feature-callout`, `feature-grid` |
@@ -72,6 +77,20 @@ The full format is in [docs/project-format.md](docs/project-format.md), and ever
 | Brand | `testimonial`, `logo-outro` |
 | Background | `background` |
 | Overlays | `lower-third`, `captions`, `watermark` |
+
+## HTML scenes
+
+```json
+{ "id": "s1", "block": "html", "duration": 4, "props": {
+  "tailwind": true,
+  "html": "<div class=\"h-full grid place-items-center\"><h1 class=\"rise text-[140px] font-extrabold\">Hello <span class=\"text-violet-400\">HTML</span></h1></div>",
+  "css": ".rise{animation:rise .8s both}@keyframes rise{from{opacity:0;transform:translateY(60px)}}"
+} }
+```
+
+![HTML, CSS and Tailwind rendered by Clipframe](docs/images/html.gif)
+
+Lay out at 1080p size. `@keyframes` play on the video clock, `var(--t)` and `var(--p)` give the time and progress, `src="asset:ID"` uses project images, and web fonts load from a stylesheet URL. Full guide: [docs/html.md](docs/html.md). Example: [examples/html-css](examples/html-css).
 
 ## Install
 
@@ -154,6 +173,8 @@ export default ({ z, defineBlock, font, spring, drawBackdrop }) =>
   });
 ```
 
+Or return HTML instead of drawing: `defineHtmlBlock({ ..., html: (props, f) => \`<div>${f.t}</div>\` })` ([docs/html.md](docs/html.md#in-code-definehtmlblock-remotion-style)).
+
 `render` is called once per frame with the time `t` in seconds. It has to be pure, so the same `t` always draws the same pixels. That is why preview and export match. See [docs/custom-blocks.md](docs/custom-blocks.md) and [examples/custom-block](examples/custom-block).
 
 ## Made for AI
@@ -186,7 +207,9 @@ npm run typecheck
 npm run docs      # regenerate docs/blocks.md
 ```
 
-Layout: `src/schema` (project format, timing, ops), `src/engine` (renderer, easing, motion, drawing helpers), `src/blocks`, `src/player`, `src/react`, `src/export` (WebCodecs + MP4), `src/cli`.
+Layout: `src/schema` (project format, timing, ops), `src/engine` (renderer, easing, motion, drawing helpers), `src/blocks`, `src/html` (HTML → frame), `src/player`, `src/react`, `src/export` (WebCodecs + MP4), `src/cli`.
+
+`CLIPFRAME_DEBUG=1 clipframe still …` saves the SVG of each HTML frame next to the output, for inspecting.
 
 ## License
 

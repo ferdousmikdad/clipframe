@@ -8,9 +8,9 @@ const dir = new URL("../examples/", import.meta.url).pathname;
 describe("examples", () => {
   it.each(readdirSync(dir))("%s is a valid project with its assets on disk", async (name) => {
     const registry = createBuiltinRegistry();
-    if (existsSync(join(dir, name, "countdown.js"))) {
-      const mod = await import(join(dir, name, "countdown.js"));
-      for (const b of resolvePluginExport(mod.default, "countdown.js")) registry.add(b);
+    for (const file of readdirSync(join(dir, name)).filter((f) => f.endsWith(".js"))) {
+      const mod = await import(join(dir, name, file));
+      for (const b of resolvePluginExport(mod.default, file)) registry.add(b);
     }
     const project = JSON.parse(readFileSync(join(dir, name, "project.json"), "utf8")) as Project;
     const res = validateProject(project, (id) => registry.get(id));

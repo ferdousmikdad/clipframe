@@ -44,6 +44,18 @@ picture (media, default 4s) — A full-frame picture with a slow push-in (or a c
 example: {"zoomFrom":1.04,"zoomTo":1.14,"pan":1.5,"shade":true}
 ```
 
+### `html` · HTML
+
+```
+html (media, default 4s) — Any HTML + CSS (or Tailwind) as a scene, animated with CSS keyframes on the video clock
+- html*: string — HTML fragment, laid out at 1080p size (e.g. 1920×1080 for 16:9). Images: src="asset:ID". No scripts
+- css: string — CSS. @keyframes animations play on the video's clock; use var(--t) seconds, var(--p) 0–1 progress, var(--primary) etc.
+- tailwind: boolean = false — Compile Tailwind v4 classes used in the HTML
+- fonts: string[] — Extra font stylesheet URLs to embed, e.g. a Google Fonts css2 link
+- background: string = "var(--background)" — CSS background behind the HTML ("transparent" to see the scene below during a transition)
+example: {"html":"<div class=\"hero\"><h1>Hello, <span>HTML</span></h1><p>CSS animations run on the video clock.</p></div>","css":".hero{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px}h1{font-size:140px;margin:0;animation:rise .8s cubic-bezier(.2,.8,.2,1) both}h1 span{color:var(--primary)}p{font-size:44px;opacity:.75;margin:0;animation:rise .8s .25s both}@keyframes rise{from{opacity:0;transform:translateY(60px)}}","tailwind":false,"background":"var(--background)"}
+```
+
 ## Text
 
 ### `title-reveal` · Title Reveal
@@ -228,4 +240,15 @@ watermark (overlay, default 10s) — Corner logo
 - opacity: number = 0.8 — 0-1
 - size: number = 0.1 — Height as fraction of the short side
 example: {"text":"taskflow","position":"top-right","opacity":0.8,"size":0.1}
+```
+
+### `html-overlay` · HTML overlay
+
+```
+html-overlay (overlay, default 4s) — Any HTML + CSS (or Tailwind) drawn over the scenes, transparent around it
+- html*: string — HTML fragment, laid out at 1080p size (e.g. 1920×1080 for 16:9). Images: src="asset:ID". No scripts
+- css: string — CSS. @keyframes animations play on the video's clock; use var(--t) seconds, var(--p) 0–1 progress, var(--primary) etc.
+- tailwind: boolean = false — Compile Tailwind v4 classes used in the HTML
+- fonts: string[] — Extra font stylesheet URLs to embed, e.g. a Google Fonts css2 link
+example: {"html":"<div class=\"tag\">Live</div>","css":".tag{position:absolute;right:64px;top:64px;padding:14px 28px;border-radius:999px;background:var(--primary);font:700 36px var(--font);animation:pop .5s both}@keyframes pop{from{transform:scale(0)}}","tailwind":false}
 ```

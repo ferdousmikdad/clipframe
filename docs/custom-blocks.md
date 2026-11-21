@@ -2,6 +2,8 @@
 
 A block is a schema plus a `render` function that draws one frame on a Canvas 2D context.
 
+If you'd rather write HTML and CSS, use `defineHtmlBlock`, whose `html(props, frame)` function returns markup for each frame. See [html.md](html.md#in-code-definehtmlblock-remotion-style).
+
 ```js
 export default ({ z, defineBlock, font, rgba, spring, interpolate, easings, drawBackdrop, drawIcon, roundedRect }) =>
   defineBlock({
@@ -53,7 +55,7 @@ export default ({ z, defineBlock, font, rgba, spring, interpolate, easings, draw
 
 ## Helpers in the API
 
-`z` (zod), `defineBlock`, easing (`easings`, `interpolate`, `spring`, `stagger`, `lerp`, `clamp`), the Remotion-style `motion` namespace (`motion.interpolate`, `motion.spring`, `motion.Easing`…), colour (`rgba`, `mix`, `contrastText`), drawing (`roundedRect`, `withShadow`, `linearGradient`, `radialGradient`, `drawImageFit`, `wrapText`, `fitFontSize`, `font`), and block parts (`drawBackdrop`, `drawIcon` with every Lucide icon, `drawCard`, `drawIconTile`, `drawFrame`, `drawPlaceholder`, `enter`).
+`z` (zod), `defineBlock`, `defineHtmlBlock`, easing (`easings`, `interpolate`, `spring`, `stagger`, `lerp`, `clamp`), the Remotion-style `motion` namespace (`motion.interpolate`, `motion.spring`, `motion.Easing`…), colour (`rgba`, `mix`, `contrastText`), drawing (`roundedRect`, `withShadow`, `linearGradient`, `radialGradient`, `drawImageFit`, `wrapText`, `fitFontSize`, `font`), and block parts (`drawBackdrop`, `drawIcon` with every Lucide icon, `drawCard`, `drawIconTile`, `drawFrame`, `drawPlaceholder`, `enter`).
 
 ## Using it
 

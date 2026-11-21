@@ -1,6 +1,6 @@
 // clipframe CLI: render a project.json to MP4 / PNG with headless Chrome, validate projects, list blocks.
 import { createServer, type IncomingMessage, type ServerResponse } from "node:http";
-import { createReadStream, existsSync, closeSync, openSync, readFileSync, renameSync, rmSync, statSync, writeSync, cpSync, mkdirSync, readdirSync } from "node:fs";
+import { createReadStream, existsSync, closeSync, openSync, readFileSync, renameSync, rmSync, statSync, writeSync, writeFileSync, cpSync, mkdirSync, readdirSync } from "node:fs";
 import { dirname, extname, join, resolve, sep, basename } from "node:path";
 import { fileURLToPath } from "node:url";
 import { parseArgs } from "node:util";
@@ -152,7 +152,7 @@ async function runInBrowser(job: RenderJob) {
       else if (p === "/__job") {
         const plugins = job.plugins.map((_, i) => `/__plugins/${i}.js`);
         const { projectDir: _d, out: _o, plugins: _p, browser: _b, headed: _h, ...rest } = job;
-        res.writeHead(200, { "Content-Type": "application/json" }).end(JSON.stringify({ ...rest, plugins }));
+        res.writeHead(200, { "Content-Type": "application/json" }).end(JSON.stringify({ ...rest, plugins, debug: !!process.env.CLIPFRAME_DEBUG }));
       } else if (p.startsWith("/__fonts/")) serveFile(req, res, join(ROOT, "fonts"), p.slice(9));
       else if (p.startsWith("/__assets/")) serveFile(req, res, job.projectDir, p.slice(10));
       else if (p.startsWith("/__plugins/")) {
@@ -162,6 +162,11 @@ async function runInBrowser(job: RenderJob) {
       } else if (p === "/__out" && req.method === "POST") {
         const data = await body(req);
         writeSync(fd, data, 0, data.length, Number(url.searchParams.get("pos") ?? 0));
+        res.writeHead(204).end();
+      } else if (p === "/__debug" && req.method === "POST") {
+        // CLIPFRAME_DEBUG=1: keep the SVG of each HTML frame next to the output, for inspecting
+        const file = `${job.out}.${(url.searchParams.get("id") ?? "html").replace(/[^\w-]/g, "_")}.svg`;
+        writeFileSync(file, await body(req));
         res.writeHead(204).end();
       } else if (p === "/__progress" && req.method === "POST") {
         const prog = JSON.parse((await body(req)).toString()) as { frame: number; total: number; etaSeconds: number; stage: string };

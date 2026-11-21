@@ -85,6 +85,37 @@ export function renderFrame(
   }
 }
 
+function itemArgs(
+  ctx: Ctx2D,
+  project: Project,
+  def: BlockDefinition,
+  item: Scene | Overlay,
+  duration: number,
+  t: number,
+  time: number,
+  assets: LoadedAssets,
+  width: number,
+  height: number,
+): RenderArgs<unknown> {
+  return {
+    ctx,
+    id: item.id,
+    props: resolveProps(def, item.props),
+    theme: project.theme,
+    t,
+    time,
+    progress: Math.min(1, Math.max(0, t / duration)),
+    duration,
+    width,
+    height,
+    unit: Math.min(width, height) / 1080,
+    orientation: width > height * 1.05 ? "landscape" : height > width * 1.05 ? "portrait" : "square",
+    assets,
+    random: seededRandom(item.id),
+    project,
+  };
+}
+
 function drawItem(
   ctx: Ctx2D,
   project: Project,
@@ -104,24 +135,8 @@ function drawItem(
     options.onMissingBlock?.(item.block);
     drawMissing(ctx, project.theme, item.block, width, height);
   } else {
-    const args: RenderArgs<unknown> = {
-      ctx,
-      props: resolveProps(def, item.props),
-      theme: project.theme,
-      t,
-      time,
-      progress: Math.min(1, Math.max(0, t / duration)),
-      duration,
-      width,
-      height,
-      unit: Math.min(width, height) / 1080,
-      orientation: width > height * 1.05 ? "landscape" : height > width * 1.05 ? "portrait" : "square",
-      assets,
-      random: seededRandom(item.id),
-      project,
-    };
     try {
-      def.render(args);
+      def.render(itemArgs(ctx, project, def, item, duration, t, time, assets, width, height));
     } catch (err) {
       ctx.restore();
       ctx.save();
@@ -129,6 +144,33 @@ function drawItem(
     }
   }
   ctx.restore();
+}
+
+/**
+ * Run the `prepare` step of every block on screen at `time` (scenes, the outgoing scene of a transition, overlays).
+ * Await it before `renderFrame` for an exact frame; it is a no-op when no block has async work.
+ */
+export async function prepareFrame(
+  project: Project,
+  time: number,
+  assets: LoadedAssets,
+  registry: BlockRegistry,
+  size: { width: number; height: number },
+): Promise<void> {
+  const state = frameAt(project, time);
+  const jobs: (Promise<void> | void)[] = [];
+  const add = (item: Scene | Overlay, duration: number, t: number) => {
+    const def = registry.get(item.block);
+    if (def?.prepare) jobs.push(def.prepare(itemArgs(null as unknown as Ctx2D, project, def, item, duration, t, time, assets, size.width, size.height)));
+  };
+  for (const layer of [state.previous, state.current]) if (layer) add(layer.scene, layer.scene.duration, layer.t);
+  for (const { overlay, t } of state.overlays) add(overlay, overlay.end - overlay.start, t);
+  await Promise.all(jobs);
+}
+
+/** True when any block in the registry has a `prepare` step (callers can skip `prepareFrame` otherwise). */
+export function needsPrepare(registry: BlockRegistry): boolean {
+  return registry.list().some((b) => !!b.prepare);
 }
 
 function drawMissing(ctx: Ctx2D, theme: Theme, label: string, w: number, h: number) {

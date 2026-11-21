@@ -1,0 +1,53 @@
+{
+  "version": 1,
+  "meta": { "name": "html-css", "format": "16:9", "fps": 30, "resolution": "1080p" },
+  "theme": { "primary": "#8B5CF6", "secondary": "#22D3EE", "background": "#0A0A14", "text": "#FFFFFF", "font": "Inter", "radius": 24 },
+  "assets": [{ "id": "shot", "type": "image", "file": "assets/dashboard.svg" }],
+  "scenes": [
+    {
+      "id": "s1",
+      "block": "html",
+      "duration": 4,
+      "props": {
+        "tailwind": true,
+        "html": "<div class=\"h-full flex flex-col items-center justify-center gap-10 bg-gradient-to-br from-violet-950 via-[#0a0a14] to-cyan-950\"><span class=\"rise rounded-full border border-violet-400/40 bg-violet-500/10 px-6 py-2 text-3xl text-violet-200\" style=\"animation-delay:.1s\">New in Clipframe</span><h1 class=\"rise text-[150px] font-extrabold leading-none tracking-tight\" style=\"animation-delay:.25s\">HTML <span class=\"text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-cyan-300\">in video</span></h1><p class=\"rise text-5xl text-white/70\" style=\"animation-delay:.45s\">Tailwind, CSS and keyframes, rendered frame-exact.</p><div class=\"mt-6 h-3 w-[900px] rounded-full bg-white/10 overflow-hidden\"><div class=\"h-full rounded-full bg-gradient-to-r from-violet-500 to-cyan-400\" style=\"width: calc(var(--p) * 100%)\"></div></div></div>",
+        "css": ".rise{animation:rise .9s cubic-bezier(.2,.8,.2,1) both}@keyframes rise{from{opacity:0;transform:translateY(70px) scale(.96);filter:blur(12px)}}"
+      }
+    },
+    {
+      "id": "s2",
+      "block": "html",
+      "duration": 4.5,
+      "transition": { "type": "slide", "duration": 0.6 },
+      "props": {
+        "tailwind": true,
+        "html": "<div class=\"h-full grid grid-cols-2 items-center gap-16 px-28\"><div><p class=\"text-3xl font-semibold uppercase tracking-[.25em] text-cyan-300\">Weekly growth</p><h2 class=\"mt-6 text-8xl font-extrabold leading-tight\">Charts are just <span class=\"text-violet-400\">divs</span></h2><ul class=\"mt-10 space-y-5 text-4xl text-white/80\"><li class=\"item\" style=\"animation-delay:.6s\">✓ Flexbox & grid</li><li class=\"item\" style=\"animation-delay:.8s\">✓ Gradients, shadows, blur</li><li class=\"item\" style=\"animation-delay:1s\">✓ Project images: <code class=\"text-cyan-300\">asset:shot</code></li></ul></div><div class=\"rounded-[40px] bg-white/5 border border-white/10 p-12 h-[640px] flex items-end gap-6\"><div class=\"bar\" style=\"--h:35%;animation-delay:.2s\"></div><div class=\"bar\" style=\"--h:55%;animation-delay:.3s\"></div><div class=\"bar\" style=\"--h:45%;animation-delay:.4s\"></div><div class=\"bar\" style=\"--h:70%;animation-delay:.5s\"></div><div class=\"bar\" style=\"--h:62%;animation-delay:.6s\"></div><div class=\"bar hot\" style=\"--h:95%;animation-delay:.7s\"></div></div></div>",
+        "css": ".bar{flex:1;height:var(--h);border-radius:20px 20px 8px 8px;background:linear-gradient(to top,#6d28d9,#a78bfa);transform-origin:bottom;animation:grow 1s cubic-bezier(.2,.9,.2,1) both}.bar.hot{background:linear-gradient(to top,#0891b2,#67e8f9);box-shadow:0 0 60px #22d3ee88}@keyframes grow{from{transform:scaleY(0)}}.item{animation:in .6s ease-out both}@keyframes in{from{opacity:0;transform:translateX(-40px)}}"
+      }
+    },
+    {
+      "id": "s3",
+      "block": "html",
+      "duration": 3.5,
+      "transition": { "type": "fade", "duration": 0.5 },
+      "props": {
+        "html": "<div class=\"wrap\"><img src=\"asset:shot\" class=\"shot\"/><div class=\"glow\"></div></div>",
+        "css": ".wrap{height:100%;display:grid;place-items:center;perspective:1600px}.shot{width:1300px;border-radius:24px;box-shadow:0 40px 120px #000a;transform:rotateX(calc(18deg - var(--p) * 18deg)) scale(calc(.9 + var(--p) * .1));}.glow{position:absolute;inset:auto 0 -200px 0;height:400px;background:radial-gradient(ellipse at center,#8b5cf655,transparent 70%)}"
+      }
+    },
+    { "id": "s4", "block": "price-reveal", "duration": 3.5, "props": { "price": 29, "plan": "Pro" }, "transition": { "type": "zoom", "duration": 0.5 } },
+    { "id": "s5", "block": "logo-outro", "duration": 3, "props": { "text": "Clipframe", "cta": "github.com/ferdousmikdad/clipframe" }, "transition": { "type": "fade", "duration": 0.5 } }
+  ],
+  "overlays": [
+    {
+      "id": "o1",
+      "block": "html-overlay",
+      "start": 0.5,
+      "end": 12,
+      "props": {
+        "html": "<div class=\"pill\"><i></i>HTML · CSS · Tailwind</div>",
+        "css": ".pill{position:absolute;left:56px;top:48px;display:flex;align-items:center;gap:14px;padding:12px 24px;border-radius:999px;background:#0008;border:1px solid #fff2;font:600 26px Inter;animation:pop .5s both}.pill i{width:14px;height:14px;border-radius:50%;background:#ef4444;animation:blink 1s steps(2) infinite}@keyframes pop{from{opacity:0;transform:translateY(-20px)}}@keyframes blink{50%{opacity:.2}}"
+      }
+    }
+  ]
+}

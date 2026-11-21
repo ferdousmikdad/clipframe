@@ -2,7 +2,7 @@
 // exporter uses, plays music / voice / one-shot sounds / video sound, and (optionally) shows controls.
 import { dimensions, projectDuration, type Project, type Resolution } from "../schema/index.js";
 import { EMPTY_ASSETS, loadFonts, loadImageAssets, renderFrame, type BlockRegistry, type LoadedAssets } from "../engine/index.js";
-import { createBuiltinRegistry } from "../blocks/index.js";
+import { createBuiltinRegistry, onHtmlFrame } from "../blocks/index.js";
 import { findAsset, identityResolver, type AssetResolver } from "../assets.js";
 import { PreviewVideo } from "./preview-video.js";
 
@@ -213,6 +213,8 @@ export function createPlayer(container: HTMLElement, options: PlayerOptions): Pl
   }
 
   canvas.addEventListener("click", () => (playing ? pause() : play()));
+  // HTML blocks finish their pictures in the background: redraw when one lands (while paused).
+  const offHtml = onHtmlFrame(() => clock.redraw());
 
   // ---------- controls ----------
   const ui = options.controls === false ? null : controls(root, { play, pause, seek, get: () => ({ time, playing, duration: projectDuration(project), fps: project.meta.fps }) });
@@ -246,6 +248,7 @@ export function createPlayer(container: HTMLElement, options: PlayerOptions): Pl
     },
     destroy() {
       destroyed = true;
+      offHtml();
       stop();
       for (const v of videos.values()) v.dispose();
       setSrc(music, "");

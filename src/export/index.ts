@@ -3,7 +3,7 @@
 // in a page or headless (the CLI drives a headless Chrome with this exact code).
 import { ArrayBufferTarget, Muxer, StreamTarget } from "mp4-muxer";
 import { dimensions, projectDuration, type Project, type Resolution } from "../schema/index.js";
-import { loadFonts, loadImageAssets, renderFrame, type BlockRegistry, type LoadedAssets } from "../engine/index.js";
+import { loadFonts, loadImageAssets, needsPrepare, prepareFrame, renderFrame, type BlockRegistry, type LoadedAssets } from "../engine/index.js";
 import { createBuiltinRegistry } from "../blocks/index.js";
 import { identityResolver, type AssetResolver } from "../assets.js";
 import { createExportVideos } from "./videos.js";
@@ -148,11 +148,13 @@ export async function renderToMp4(project: Project, options: ExportOptions = {})
   const ctx = canvas.getContext("2d", { alpha: false }) as OffscreenCanvasRenderingContext2D;
   const started = performance.now();
   const frameUs = 1e6 / fps;
+  const async = needsPrepare(registry);
   try {
     for (let i = 0; i < total; i++) {
       if (options.signal?.aborted) throw new DOMException("Export cancelled", "AbortError");
       if (failure) throw failure;
       await videos.prepare(i);
+      if (async) await prepareFrame(project, times[i], videos.assets, registry, { width, height });
       renderFrame(ctx, project, times[i], videos.assets, registry);
       const frame = new VideoFrame(canvas, { timestamp: Math.round(i * frameUs), duration: Math.round(frameUs) });
       encoder.encode(frame, { keyFrame: i % (fps * 2) === 0 });
@@ -198,6 +200,7 @@ export async function renderStill(
   const videos = await createExportVideos(project, base, [t], resolve, registry);
   try {
     await videos.prepare(0);
+    await prepareFrame(project, t, videos.assets, registry, { width, height });
     const canvas = new OffscreenCanvas(width, height);
     const ctx = canvas.getContext("2d", { alpha: false }) as OffscreenCanvasRenderingContext2D;
     renderFrame(ctx, project, t, videos.assets, registry);

@@ -19,6 +19,7 @@ import picture from "./blocks/picture.js";
 import lowerThird from "./blocks/lower-third.js";
 import captions from "./blocks/captions.js";
 import watermark from "./blocks/watermark.js";
+import { html, htmlOverlay, defineHtmlBlock } from "./blocks/html.js";
 import { defineBlock } from "./define.js";
 import * as shared from "./shared.js";
 import { drawCard, drawIconTile } from "./card.js";
@@ -40,12 +41,16 @@ export const builtinBlocks: BlockDefinition[] = [
   logoOutro,
   background,
   picture,
+  html,
   lowerThird,
   captions,
   watermark,
+  htmlOverlay,
 ];
 
-export { defineBlock };
+export { defineBlock, defineHtmlBlock };
+export type { HtmlFrameInfo } from "./blocks/html.js";
+export { onHtmlFrame, ensureHtmlFrame, type HtmlSource } from "../html/index.js";
 export { color, assetRef, videoRef, iconName, point, drawIcon, drawBackdrop, drawPlaceholder, enter, graphemes, initials, hasIcon, ICON_NAMES } from "./shared.js";
 export { drawCard, drawIconTile, drawFrame, layoutFrame };
 export * from "./describe.js";
@@ -57,7 +62,7 @@ export function createBuiltinRegistry() {
 }
 
 /** Everything a plugin module receives: `export default (api) => api.defineBlock({...})`. */
-export const pluginApi = { z, defineBlock, ...engine, ...shared, drawCard, drawIconTile, drawFrame, layoutFrame };
+export const pluginApi = { z, defineBlock, defineHtmlBlock, ...engine, ...shared, drawCard, drawIconTile, drawFrame, layoutFrame };
 export type PluginApi = typeof pluginApi;
 
 /** Turn a plugin module's default export (factory, definition or array) into block definitions. */

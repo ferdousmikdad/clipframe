@@ -23,12 +23,19 @@ export function font(weight: number, sizePx: number, family: string): string {
 }
 
 let loading: Promise<void> | null = null;
+let fontsBase = "/fonts";
+
+/** Where the bundled .woff2 files were loaded from (the html block embeds them into its frames). */
+export function bundledFontsUrl(): string {
+  return fontsBase;
+}
 
 /**
  * Register bundled fonts with `document.fonts` and wait for them.
  * Call before rendering or exporting. `baseUrl` is where the .woff2 files are served.
  */
 export function loadFonts(baseUrl = "/fonts"): Promise<void> {
+  fontsBase = baseUrl.replace(/\/$/, "");
   if (loading) return loading;
   if (typeof document === "undefined" || typeof FontFace === "undefined") return Promise.resolve();
   const faces: FontFace[] = [];

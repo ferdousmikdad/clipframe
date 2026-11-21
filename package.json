@@ -1,7 +1,7 @@
 {
   "name": "clipframe",
   "version": "0.1.0",
-  "description": "Make videos from JSON. A free, MIT-licensed Remotion alternative: canvas renderer, prebuilt animation blocks, a player, browser MP4 export and a headless CLI.",
+  "description": "Make videos from JSON or HTML/CSS/Tailwind. A free, MIT-licensed Remotion alternative: canvas renderer, HTML scenes, prebuilt animation blocks, player, browser MP4 export and a headless CLI.",
   "license": "MIT",
   "author": "Ferdous Mikdad",
   "type": "module",
@@ -15,7 +15,9 @@
     "mp4",
     "animation",
     "ai",
-    "promo-video"
+    "promo-video",
+    "html-to-video",
+    "tailwind"
   ],
   "repository": {
     "type": "git",
@@ -74,6 +76,7 @@
     "mediabunny": "1.65.2",
     "mp4-muxer": "^5.2.2",
     "playwright-core": "^1.54.0",
+    "tailwindcss": "^4.1.11",
     "zod": "^4.1.0"
   },
   "peerDependencies": {
