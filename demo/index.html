@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Clipframe Playground</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%237c3aed'/><path d='M12 9l12 7-12 7z' fill='white'/></svg>" />
+    <style>
+      :root { --bg:#0b0b12; --panel:#14141f; --line:#26263a; --fg:#ececf4; --muted:#9a9ab0; --accent:#7c3aed; color-scheme: dark; }
+      * { box-sizing: border-box; }
+      body { margin:0; background:var(--bg); color:var(--fg); font:14px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif; }
+      header { display:flex; align-items:center; gap:12px; padding:14px 20px; border-bottom:1px solid var(--line); flex-wrap:wrap; }
+      header h1 { font-size:16px; margin:0; font-weight:700; }
+      header p { margin:0; color:var(--muted); flex:1; min-width:200px; }
+      header a { color:var(--fg); }
+      main { display:grid; grid-template-columns:minmax(0,1.2fr) minmax(0,1fr); gap:20px; padding:20px; max-width:1500px; margin:0 auto; }
+      @media (max-width: 900px) { main { grid-template-columns:1fr; padding:16px; } }
+      .stage { min-width:0; }
+      .toolbar { display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap; align-items:center; }
+      select, button { font:inherit; color:var(--fg); background:var(--panel); border:1px solid var(--line); border-radius:8px; padding:7px 12px; }
+      button.primary { background:var(--accent); border-color:var(--accent); cursor:pointer; font-weight:600; }
+      button:disabled { opacity:.5; cursor:default; }
+      #status { color:var(--muted); font-size:13px; }
+      #status a { color:#c4b5fd; }
+      textarea { width:100%; height:calc(100vh - 170px); min-height:360px; resize:vertical; background:var(--panel); color:var(--fg); border:1px solid var(--line); border-radius:10px; padding:12px; font:12.5px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace; }
+      #errors { color:#fca5a5; font:12px/1.5 ui-monospace, monospace; white-space:pre-wrap; margin-top:8px; }
+      .clipframe-player { max-height:calc(100vh - 170px); }
+      .clipframe-player canvas { max-height:calc(100vh - 230px); object-fit:contain; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Clipframe</h1>
+      <p>Edit the JSON, watch it play, export an MP4. Everything runs in your browser.</p>
+      <a href="https://github.com/ferdousmikdad/clipframe">GitHub</a>
+    </header>
+    <main>
+      <section class="stage">
+        <div class="toolbar">
+          <select id="example" aria-label="Example"></select>
+          <select id="res" aria-label="Export size"><option>1080p</option><option>720p</option></select>
+          <button id="export" class="primary">Export MP4</button>
+          <span id="status"></span>
+        </div>
+        <div id="player"></div>
+      </section>
+      <section>
+        <textarea id="json" spellcheck="false" aria-label="Project JSON"></textarea>
+        <div id="errors"></div>
+      </section>
+    </main>
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>

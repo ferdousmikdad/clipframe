@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "meta": { "name": "custom-block", "format": "1:1", "fps": 30, "resolution": "1080p" },
+  "theme": { "primary": "#F97316", "secondary": "#FACC15", "background": "#111111", "text": "#FFFFFF", "font": "Poppins", "radius": 20 },
+  "assets": [],
+  "scenes": [
+    { "id": "s1", "block": "countdown", "duration": 4, "props": { "from": 3, "message": "Launch!" } },
+    { "id": "s2", "block": "title-reveal", "duration": 3, "props": { "title": "Your own blocks", "subtitle": "One small .js file" }, "transition": { "type": "zoom", "duration": 0.5 } }
+  ],
+  "overlays": []
+}

@@ -1,0 +1,97 @@
+{
+  "name": "clipframe",
+  "version": "0.1.0",
+  "description": "Make videos from JSON. A free, MIT-licensed Remotion alternative: canvas renderer, prebuilt animation blocks, a player, browser MP4 export and a headless CLI.",
+  "license": "MIT",
+  "author": "Ferdous Mikdad",
+  "type": "module",
+  "keywords": [
+    "video",
+    "remotion",
+    "remotion-alternative",
+    "motion-graphics",
+    "canvas",
+    "webcodecs",
+    "mp4",
+    "animation",
+    "ai",
+    "promo-video"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ferdousmikdad/clipframe.git"
+  },
+  "homepage": "https://github.com/ferdousmikdad/clipframe#readme",
+  "bugs": "https://github.com/ferdousmikdad/clipframe/issues",
+  "engines": {
+    "node": ">=20"
+  },
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./player": {
+      "types": "./dist/player/index.d.ts",
+      "default": "./dist/player/index.js"
+    },
+    "./export": {
+      "types": "./dist/export/index.d.ts",
+      "default": "./dist/export/index.js"
+    },
+    "./react": {
+      "types": "./dist/react/index.d.ts",
+      "default": "./dist/react/index.js"
+    },
+    "./fonts/*": "./fonts/*",
+    "./package.json": "./package.json"
+  },
+  "bin": {
+    "clipframe": "./bin/clipframe.js"
+  },
+  "files": [
+    "dist",
+    "bin",
+    "fonts",
+    "examples",
+    "licenses",
+    "THIRD_PARTY_NOTICES.md"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json && node scripts/build-page.mjs",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "demo": "node scripts/demo-assets.mjs && vite demo",
+    "demo:build": "node scripts/demo-assets.mjs && vite build demo",
+    "prepublishOnly": "npm run build && npm test",
+    "docs": "npm run build && node scripts/gen-docs.mjs"
+  },
+  "dependencies": {
+    "lucide": "^1.64.0",
+    "mediabunny": "1.65.2",
+    "mp4-muxer": "^5.2.2",
+    "playwright-core": "^1.54.0",
+    "zod": "^4.1.0"
+  },
+  "peerDependencies": {
+    "react": ">=18"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.0",
+    "@types/react": "^19.1.0",
+    "esbuild": "^0.25.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "typescript": "~5.8.3",
+    "vite": "^6.3.5",
+    "vitest": "^3.2.4"
+  }
+}

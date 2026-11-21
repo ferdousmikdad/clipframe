@@ -1,0 +1,10 @@
+node_modules/
+dist/
+demo/dist/
+*.part
+*.mp4
+!examples/**/*.mp4
+.DS_Store
+*.log
+coverage/
+demo/public/
