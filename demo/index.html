@@ -33,6 +33,7 @@
       Clipframe
     </a>
     <nav class="nav-links" aria-label="Main">
+      <a href="#ai">For AI</a>
       <a href="#make">Features</a>
       <a href="#showcase">Showcase</a>
       <a href="#compare">Compare</a>
@@ -58,9 +59,9 @@
   <!-- ============ Hero ============ -->
   <div class="hero">
     <div class="container">
-      <a class="eyebrow" href="#compare"><b>New</b> HTML, CSS and Tailwind scenes <span class="soft">→</span></a>
+      <a class="eyebrow" href="#ai"><b>New</b> Make videos from Claude, Cursor and Codex <span class="soft">→</span></a>
       <h1>Make videos with code.<span class="soft">Free for every team, forever.</span></h1>
-      <p class="lead">Clipframe turns JSON, HTML, Tailwind or a few lines of JavaScript into MP4 videos. Preview live, export right in the browser or render from the command line. MIT licensed: no seat fees, no render fees, no company size limits.</p>
+      <p class="lead">Clipframe turns JSON, HTML, Tailwind or a few lines of JavaScript into MP4 videos, and your AI assistant can drive it for you. Preview live, export in the browser or render from the command line. MIT licensed: no seat fees, no render fees, no company size limits.</p>
       <div class="cta-row">
         <a class="btn primary lg" href="./playground.html">Open the playground <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></a>
         <a class="btn lg" href="https://github.com/ferdousmikdad/clipframe">Star on GitHub</a>
@@ -119,11 +120,73 @@
     </div>
   </div>
 
-  <!-- ============ 01 Ways to make ============ -->
-  <section id="make">
+  <!-- ============ 01 For AI ============ -->
+  <section id="ai">
     <div class="container">
       <div class="chapter">
-        <div class="chapter-l"><span class="num">01</span><h2>Make</h2></div>
+        <div class="chapter-l"><span class="num">01</span><h2>For AI</h2></div>
+        <div class="chapter-r">
+          <h3>Ask Claude for a video.<span class="soft">Get an MP4 back.</span></h3>
+          <p>Clipframe ships an MCP server and an Agent Skill. Your assistant writes the project, looks at real frames, fixes what's off and renders the file, all on your computer. It writes short JSON, not animation code, so a whole video costs a few thousand tokens.</p>
+        </div>
+      </div>
+      <div class="ai-grid">
+        <div>
+          <div class="tabs small-tabs" role="tablist" aria-label="Set up your AI">
+            <button class="tab" role="tab" aria-selected="true" aria-controls="ai-cc" id="ta-cc">Claude Code</button>
+            <button class="tab" role="tab" aria-selected="false" aria-controls="ai-desk" id="ta-desk">Claude Desktop · Cursor</button>
+            <button class="tab" role="tab" aria-selected="false" aria-controls="ai-skill" id="ta-skill">Agent Skill</button>
+            <button class="tab" role="tab" aria-selected="false" aria-controls="ai-llms" id="ta-llms">llms.txt</button>
+          </div>
+          <div class="ai-pane" id="ai-cc" role="tabpanel" aria-labelledby="ta-cc">
+            <p>One command. Then ask for a video in any session.</p>
+            <div class="install left"><code id="cmd-cc"><span class="prompt">$ </span>claude mcp add clipframe -- npx -y github:ferdousmikdad/clipframe mcp</code><button class="btn copy" type="button" data-copy="#cmd-cc">Copy</button></div>
+          </div>
+          <div class="ai-pane" id="ai-desk" role="tabpanel" aria-labelledby="ta-desk" hidden>
+            <p>Paste into the app's MCP config. In Claude Desktop: Settings → Developer → Edit Config. The same JSON works in Cursor, Windsurf and VS Code.</p>
+            <div class="code"><div class="code-bar">mcp config<button class="btn copy" type="button" data-copy="#cmd-desk" style="margin-left:auto;height:28px">Copy</button></div><pre id="cmd-desk">{ "mcpServers": { "clipframe": {
+    "command": "npx",
+    "args": ["-y", "github:ferdousmikdad/clipframe", "mcp"]
+} } }</pre></div>
+          </div>
+          <div class="ai-pane" id="ai-skill" role="tabpanel" aria-labelledby="ta-skill" hidden>
+            <p>For Claude Code, Codex and other agents that load skills: a step-by-step workflow plus the block reference.</p>
+            <div class="install left"><code id="cmd-skill"><span class="prompt">$ </span>npx skills add ferdousmikdad/clipframe</code><button class="btn copy" type="button" data-copy="#cmd-skill">Copy</button></div>
+          </div>
+          <div class="ai-pane" id="ai-llms" role="tabpanel" aria-labelledby="ta-llms" hidden>
+            <p>Any assistant that can read the web can learn Clipframe from one page. Give it this link:</p>
+            <div class="install left"><code id="cmd-llms">https://ferdousmikdad.github.io/clipframe/llms-full.txt</code><button class="btn copy" type="button" data-copy="#cmd-llms">Copy</button></div>
+          </div>
+          <ul class="ai-tools">
+            <li><code>clipframe_guide</code><span>the format and every block, in one read</span></li>
+            <li><code>validate_project</code><span>errors it can fix: <em>s3.props.title: required</em></span></li>
+            <li><code>render_still</code><span>returns the frame as an image, so the AI checks its work</span></li>
+            <li><code>render_video</code><span>the MP4, rendered on your machine</span></li>
+          </ul>
+        </div>
+        <div class="art compact v3">
+          <div class="chat">
+            <div class="msg you">Make a 9:16 launch reel for Orbit, my inbox app. Dark, orange accent, about 15 seconds.</div>
+            <div class="msg ai">
+              <div class="step"><i></i><code>clipframe_guide</code></div>
+              <div class="step"><i></i><code>validate_project</code><span>valid · 6 scenes · 15.5s</span></div>
+              <div class="step"><i></i><code>render_still</code><span>t = 4.2s</span></div>
+              <img class="frame" src="./ai-frame.jpg" width="108" height="192" alt="A frame of the reel: Too many tabs? Too many pings? Meet Orbit." />
+              <p>The hook reads well. I'll tighten the pricing scene, then render.</p>
+              <div class="step"><i></i><code>render_video</code><span>orbit.mp4 · 15.5s · 6.2 MB</span></div>
+              <p>Done: <b>~/Clipframe/orbit.mp4</b>. Want a 1:1 version for the feed too?</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 02 Ways to make ============ -->
+  <section id="make" class="rule">
+    <div class="container">
+      <div class="chapter">
+        <div class="chapter-l"><span class="num">02</span><h2>Make</h2></div>
         <div class="chapter-r">
           <h3>Four ways to make a video.<span class="soft">One renderer underneath.</span></h3>
           <p>Ask an agent, write JSON, design in HTML and Tailwind, or drop down to code. Every path ends in the same frame-exact MP4.</p>
@@ -239,7 +302,7 @@
   <section id="showcase" class="rule">
     <div class="container">
       <div class="chapter">
-        <div class="chapter-l"><span class="num">02</span><h2>Showcase</h2></div>
+        <div class="chapter-l"><span class="num">03</span><h2>Showcase</h2></div>
         <div class="chapter-r">
           <h3>These are not recordings.<span class="soft">They render live, right here.</span></h3>
           <p>Every video below is a small JSON file, drawn frame by frame by Clipframe in your browser. Open one in the playground to change it.</p>
@@ -253,7 +316,7 @@
   <section id="features" class="rule">
     <div class="container">
       <div class="chapter">
-        <div class="chapter-l"><span class="num">03</span><h2>Included</h2></div>
+        <div class="chapter-l"><span class="num">04</span><h2>Included</h2></div>
         <div class="chapter-r">
           <h3>Everything a video needs.<span class="soft">Nothing behind a paywall.</span></h3>
           <p>Every feature ships in the same MIT-licensed package. There is no paid tier to unlock.</p>
@@ -280,7 +343,7 @@
   <section id="compare" class="rule">
     <div class="container">
       <div class="chapter">
-        <div class="chapter-l"><span class="num">04</span><h2>Why Clipframe</h2></div>
+        <div class="chapter-l"><span class="num">05</span><h2>Why Clipframe</h2></div>
         <div class="chapter-r">
           <h3>Ahead where it counts.<span class="soft">Your budget, your license, your tokens.</span></h3>
           <p>Remotion pioneered video as code. Clipframe takes the same idea and removes the bill: open source, no seats, no per-render fees, and a format agents can write cheaply.</p>
@@ -297,6 +360,7 @@
             <tr><td>What you or your agent writes</td><td class="us">Short JSON, HTML, or code</td><td>React components</td></tr>
             <tr><td>Ready-made promo blocks</td><td class="us">20 included</td><td>Elements and templates</td></tr>
             <tr><td>HTML, CSS and Tailwind</td><td class="us">Yes</td><td>Yes</td></tr>
+            <tr><td>Use it from Claude, Cursor, Codex</td><td class="us">MCP server with frame previews, Agent Skill, llms.txt</td><td>Agent Skills, plugins, WebMCP</td></tr>
             <tr><td>Player, browser export, CLI render</td><td class="us">Yes</td><td>Yes</td></tr>
             <tr><td>Video, audio, transitions</td><td class="us">Yes</td><td>Yes</td></tr>
           </tbody>
@@ -310,7 +374,7 @@
   <section id="pricing" class="rule">
     <div class="container">
       <div class="chapter">
-        <div class="chapter-l"><span class="num">05</span><h2>Pricing</h2></div>
+        <div class="chapter-l"><span class="num">06</span><h2>Pricing</h2></div>
         <div class="chapter-r">
           <h3>Free. Not free-for-now.<span class="soft">The license says so.</span></h3>
           <p>MIT means you can use, change, ship and sell with Clipframe at any scale. Nobody can take that back.</p>
@@ -349,7 +413,7 @@
   <section class="rule">
     <div class="container oss">
       <div>
-        <div class="chapter-l" style="margin-bottom:28px"><span class="num">06</span><h2>Open source</h2></div>
+        <div class="chapter-l" style="margin-bottom:28px"><span class="num">07</span><h2>Open source</h2></div>
         <h3 style="font-size:clamp(26px,2.6vw,32px);line-height:1.3;letter-spacing:-0.01em">Read it, fork it, ship it.<span class="soft" style="display:block">Pull requests welcome.</span></h3>
         <p style="margin-top:24px;font-size:17px;max-width:520px">The renderer, every block, the player, the exporter and the CLI are all in one MIT-licensed repository. New blocks are one file, and so is your first contribution.</p>
         <div class="cta-row"><a class="btn primary" href="https://github.com/ferdousmikdad/clipframe">Star on GitHub</a><a class="btn" href="https://github.com/ferdousmikdad/clipframe/blob/main/CONTRIBUTING.md">Contribute</a></div>
@@ -369,10 +433,11 @@ createPlayer(el, { project });           <span class="c">// live preview</span>
   <section id="faq" class="rule">
     <div class="container">
       <div class="chapter">
-        <div class="chapter-l"><span class="num">07</span><h2>Questions</h2></div>
+        <div class="chapter-l"><span class="num">08</span><h2>Questions</h2></div>
         <div class="chapter-r"><h3>Short answers.<span class="soft">Honest ones.</span></h3></div>
       </div>
       <div class="faq">
+        <details><summary>Can Claude make videos with Clipframe?</summary><p>Yes. Add the MCP server (<code>claude mcp add clipframe -- npx -y github:ferdousmikdad/clipframe mcp</code>) or the Agent Skill, then ask for a video. Claude writes the project, renders frames to check them, and renders the MP4 on your computer. The same works in Claude Desktop, Cursor, Codex and other MCP apps.</p></details>
         <details><summary>Is it really free for my company?</summary><p>Yes. Clipframe is MIT licensed: use it commercially at any company size, with no seats, no render fees and no sign-up. Fonts are SIL OFL and the icons are ISC, both free for commercial use.</p></details>
         <details><summary>Can I bring my Remotion project over?</summary><p>Not unchanged. Clipframe is not a drop-in replacement: scenes are JSON blocks, HTML or small code blocks rather than React trees. The animation helpers (<code>interpolate</code>, <code>spring</code>, easing) work the same way, so porting a component is usually quick, and React components can be rendered to HTML per frame.</p></details>
         <details><summary>Which browsers can export?</summary><p>Chrome and Edge, which have WebCodecs video encoding. Every modern browser can preview. The CLI uses headless Chrome, so server rendering works anywhere Chrome runs.</p></details>

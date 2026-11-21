@@ -1,5 +1,5 @@
 // Write docs/blocks.md from the block definitions (run after `npm run build`).
-import { writeFileSync } from "node:fs";
+import { copyFileSync, mkdirSync, writeFileSync } from "node:fs";
 import { createBuiltinRegistry, describeBlock } from "../dist/index.js";
 
 const registry = createBuiltinRegistry();
@@ -12,4 +12,9 @@ for (const cat of order.filter((c) => groups[c])) {
   for (const b of groups[cat]) md += `\n### \`${b.id}\` · ${b.name}\n\n\`\`\`\n${describeBlock(b)}\n\`\`\`\n`;
 }
 writeFileSync("docs/blocks.md", md);
-console.log("wrote docs/blocks.md");
+// the Agent Skill carries copies of the reference docs (skills are installed on their own)
+mkdirSync("skills/clipframe/references", { recursive: true });
+copyFileSync("docs/blocks.md", "skills/clipframe/references/blocks.md");
+copyFileSync("docs/project-format.md", "skills/clipframe/references/project-format.md");
+copyFileSync("docs/html.md", "skills/clipframe/references/html.md");
+console.log("wrote docs/blocks.md and skills/clipframe/references/");

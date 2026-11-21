@@ -10,12 +10,39 @@ npx clipframe render my-video/project.json      # → my-video/taskflow-promo.mp
 ![A promo rendered by Clipframe](docs/images/taskflow.gif)
 
 - **Free for everyone.** It uses the MIT license, including commercial use at any company size. There are no seat licenses or render fees.
+- **Made for AI assistants.** An MCP server and an Agent Skill let Claude, Cursor or Codex make, check and render videos for you. [Set it up in one line](#make-videos-with-claude-cursor-or-any-ai).
 - **JSON in, MP4 out.** A video is a list of scenes, each a block plus its props. People can write it by hand, apps can generate it, and an AI can write it in a few hundred tokens instead of thousands of lines of animation code.
 - **Preview matches export.** The player and the exporter call the same `renderFrame`, so the file shows exactly what you saw.
 - **Renders anywhere Chrome runs.** It exports in the browser with WebCodecs (no server), or from the command line with headless Chrome.
 - **HTML, CSS and Tailwind in the video.** Use flexbox, grid, gradients, 3D transforms, web fonts and `@keyframes` animations, captured frame by frame on the video's clock. You can also write blocks whose HTML comes from code (React works too). See [HTML in video](docs/html.md).
 - **Video, music, voice-over and sound effects,** with the music ducking under speech and clip sound.
 - **Extensible.** A custom block is one small JavaScript file: a schema plus either a canvas draw function or an HTML function.
+
+## Make videos with Claude, Cursor or any AI
+
+Ask for a video in plain words, for example "make a 20-second 9:16 launch video for my app with these screenshots", and your AI assistant builds it with Clipframe. It writes the JSON, checks it, **looks at rendered frames** to fix layout, then renders the MP4 on your computer. Because the AI writes short JSON instead of animation code, a video costs a few thousand tokens, not a codebase.
+
+**Claude Code**
+
+```bash
+claude mcp add clipframe -- npx -y github:ferdousmikdad/clipframe mcp
+```
+
+**Claude Desktop, Cursor, Windsurf, VS Code, or any MCP app.** Add this to the app's MCP config (Claude Desktop: Settings → Developer → Edit Config):
+
+```json
+{ "mcpServers": { "clipframe": { "command": "npx", "args": ["-y", "github:ferdousmikdad/clipframe", "mcp"] } } }
+```
+
+**Agent Skill** (Claude Code, Codex and other agents that load skills):
+
+```bash
+npx skills add ferdousmikdad/clipframe
+```
+
+The MCP server's tools are `clipframe_guide`, `list_blocks`, `describe_block`, `validate_project`, `render_still` (returns the frame as an image the AI can see), `render_video` and `save_project`. The first run downloads and builds Clipframe, which takes about a minute. Rendering needs Google Chrome or `npx playwright install chromium`.
+
+AI-readable docs: [llms.txt](https://ferdousmikdad.github.io/clipframe/llms.txt) · [llms-full.txt](https://ferdousmikdad.github.io/clipframe/llms-full.txt) · [AGENTS.md](AGENTS.md)
 
 ## Is it a Remotion replacement?
 
@@ -113,6 +140,7 @@ clipframe validate project.json                    # check it before rendering
 clipframe blocks                                   # list blocks
 clipframe blocks title-reveal                      # one block's props
 clipframe schema                                   # project JSON Schema
+clipframe mcp                                      # MCP server for AI apps (stdio)
 clipframe render project.json --blocks my-block.js # with your own blocks
 ```
 

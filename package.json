@@ -17,7 +17,12 @@
     "ai",
     "promo-video",
     "html-to-video",
-    "tailwind"
+    "tailwind",
+    "mcp",
+    "mcp-server",
+    "claude",
+    "ai-agents",
+    "agent-skill"
   ],
   "repository": {
     "type": "git",
@@ -60,6 +65,7 @@
     "fonts",
     "examples",
     "licenses",
+    "skills",
     "THIRD_PARTY_NOTICES.md"
   ],
   "scripts": {
@@ -69,7 +75,8 @@
     "demo": "node scripts/demo-assets.mjs && vite demo",
     "demo:build": "node scripts/demo-assets.mjs && vite build demo",
     "prepublishOnly": "npm run build && npm test",
-    "docs": "npm run build && node scripts/gen-docs.mjs"
+    "docs": "npm run build && node scripts/gen-docs.mjs",
+    "prepare": "npm run build"
   },
   "dependencies": {
     "lucide": "^1.64.0",

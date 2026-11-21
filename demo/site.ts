@@ -29,8 +29,9 @@ const fmt = (t: number) => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).p
 })();
 
 // ---------- tabs ----------
-(function tabs() {
-  const all = Array.from(document.querySelectorAll<HTMLButtonElement>('[role="tab"]'));
+document.querySelectorAll('[role="tablist"]').forEach((list) => tabs(list));
+function tabs(list: Element) {
+  const all = Array.from(list.querySelectorAll<HTMLButtonElement>('[role="tab"]'));
   const select = (tab: HTMLButtonElement) =>
     all.forEach((t) => {
       const on = t === tab;
@@ -51,7 +52,7 @@ const fmt = (t: number) => `${Math.floor(t / 60)}:${String(Math.floor(t % 60)).p
       next.focus();
     });
   });
-})();
+}
 
 // ---------- copy buttons ----------
 document.querySelectorAll<HTMLButtonElement>("[data-copy]").forEach((btn) =>
